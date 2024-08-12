@@ -35,3 +35,8 @@
 
 然后按**F6**执行就可以了
 
+## 三，添加鼠标右键Vscode打开
+
+![image-20240812223222670](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408122232706.png)
+
+![image-20240812223338712](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408122233745.png)
