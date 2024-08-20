@@ -210,7 +210,7 @@ uint8_t MySPI_swapByte(uint8_t ByteSend)
 
 ![image-20240820094832677](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408200948727.png)
 
-![image-20240820095505767](C:\Users\a1874\AppData\Roaming\Typora\typora-user-images\image-20240820095505767.png)
+![](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408201045645.png)
 
 ## 连续传输
 
