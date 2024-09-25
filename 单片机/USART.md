@@ -208,7 +208,7 @@ COMS电平: 1: 3.3V, 0: 0V
 
 
 
-## USART
+# USART
 
 
 
@@ -367,7 +367,7 @@ int fgetc(FILE *f)
 
 
 
-### 串口收发数据包（来自江科大）
+## 串口收发数据包（来自江科大）
 
 <img src="https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408142235277.png" alt="image-20240814223533183" style="zoom:50%;" />
 
@@ -389,10 +389,28 @@ int fgetc(FILE *f)
 
 
 
-### 串口使用的一些问题
+## USART使用的一些问题
+
+### 双板通信
+
+记得T接R，R接T，然后切除vcc，gnd，尤其是gnd，防止烧板子
 
 
 
-***解决办法引自下面的文章***
+### 首字节丢失
 
-<img src="https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408142236974.png" alt="image-20240814223657831" style="zoom:70%;" />
+场景：在进行A，C板串口通信的时候，发送的uwb数据的第一位总是丢失，然后把数据统一往外移了一位就解决了，但是第一位数据还是丢失了，即0x55还是总是没有接收到，但是由于我把数据都后移了一位所以也不影响我使用
+
+![image-20240925212752093](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202409252127222.png)
+
+分析原因：
+
+直接发送数据，由于数据缓冲区（TDR)向移位寄存器发送数据是并行发送，时间较快，而从移位寄存器向外传输数据是串行输出，耗时较长，如此可能导致数据丢失多个，或只接收到最后一个，因为后面并行传输的快，还没等数据发送完成，下一个数据就覆盖住了上一个数据。
+
+解决方法：
+
+清除TC标志位：在发送第一个字节前，确保TC（发送完成）标志位已经清除。可以在发送数据前先读SR寄存器，再写DR寄存器来清除它。
+
+![image-20240925221551836](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202409252215908.png)
+
+![image-20240925221625724](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202409252216799.png)
