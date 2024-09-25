@@ -1,5 +1,3 @@
-[TOC]
-
 # DMA
 
 ***Direct Memory Access***，直接**存储器**访问。主要功能是搬运数据，并且不占用CPU，通过硬件为RAM和IO开辟一条通道

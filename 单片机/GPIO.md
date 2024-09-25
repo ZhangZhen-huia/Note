@@ -1,5 +1,3 @@
-[TOC]
-
 # GPIO
 
 ***GPIO：general purpose intput output 通用输入输出端，即软件可以控制的引脚***

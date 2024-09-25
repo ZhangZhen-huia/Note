@@ -1,5 +1,3 @@
-[TOC]
-
 # IIC--同步串行半双工总线
 
 <img src="https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202408171603918.png" alt="image-20240817160327852" style="zoom:50%;" />
