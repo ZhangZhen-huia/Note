@@ -21,5 +21,29 @@
 |              **`/usr`**              | **`应用程序存放目录，/usr/bin 存放应用程序，/usr/share 存放共享数据，/usr/lib 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。/usr/local: 存放软件升级包。/usr/share/doc: 系统说明文件存放目录。/usr/share/man: 程序说明文件存放目录`** |
 |              **`/var`**              | **`放置系统执行过程中经常变化的文件，如随时更改的日志文件 /var/log，/var/log/message：所有的登录文件存放目录，/var/spool/mail：邮件存放的目录，/var/run:程序或服务启动后，其PID存放在该目录下`** |
 
+- 在Linux系统中，路径之间的层级关系用 / 来表示
+
+- 在Windows系统中，路径之间的层级关系用 \ 来表示
+
+  ![image-20241005205421249](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410052054302.png)
+
+![image-20241005205432672](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410052054726.png)
+
+
+
+# 命令通用格式
+
+![image-20241005210056892](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410052100934.png)
+
+•command： 命令本身
+
+•-options：[可选，非必填]命令的一些选项，可以通过选项控制命令的行为细节
+
+•parameter：[可选，非必填]命令的参数，多数用于命令的指向目标等
+
+语法中的[]，表示可选的意思
+
+**<u>Linux命令本体上就是一个个的二进制程序，和Windows系统中的 .exe文件是一个意思</u>**
+
 
 
