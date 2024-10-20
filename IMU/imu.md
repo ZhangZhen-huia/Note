@@ -10,7 +10,7 @@
 
 假如你站在地面上，选取重力的方向为负 *z* 方向。如果你左转，你将绕 *z* 轴旋转 90度，在轴角表示中，这将是
 
-![img](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410202317723.svg+xml)
+![image-20241020233815961](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410202338726.png)
 
 **r=[x,y,z,θ]**
 
