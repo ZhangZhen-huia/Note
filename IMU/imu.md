@@ -22,7 +22,7 @@
 
 ## 欧拉角
 
-**百度解释**：用来 **唯一的** **确定定点转动**刚体位置的 **三个一组**的 **独立角参量**，由章动角θ、旋进角（即进动角）ψ和自转角φ组成，为欧拉首先提出而得名。简单的说是使用XYZ三个轴的旋转分量,来描述一个6自由度的旋转
+**百度解释**：用来 **唯一的** **确定定点转动**刚体位置的 **三个一组**的 **独立角参量**，由章动角θ、旋进角（即进动角）ψ和自转角φ组成，为欧拉首先提出而得名。简单的说是使用XYZ三个轴的旋转分量,来描述一个6自由度的旋转，但**是使用欧拉角会出现万向节锁的问题**
 
 ![img](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410202317046.gif)
 
@@ -82,7 +82,7 @@ Tait–Bryan angles 也被称为Cardan angles, nautical angles, (heading, elevat
 
 
 
-然后为了表示一个物体绕三个轴的旋转，可以把三个轴的旋转矩阵相乘
+然后为了表示一个物体绕三个轴的旋转，可以把三个轴的旋转矩阵相乘，可以看出，旋转矩阵是可以与欧拉角进行相互转换的
 
 ![image-20241021174909764](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202410211749800.png)
 
@@ -92,9 +92,26 @@ Tait–Bryan angles 也被称为Cardan angles, nautical angles, (heading, elevat
 
 百度解释：
 
-四元数，是简单的超复数。 [复数](https://baike.baidu.com/item/复数/254365?fromModule=lemma_inlink)是由[实数](https://baike.baidu.com/item/实数/296419?fromModule=lemma_inlink)加上[虚数单位](https://baike.baidu.com/item/虚数单位/6803458?fromModule=lemma_inlink) i 组成**，其中i²= -1**。 相似地，**四元数都是由实数加上三个虚数单位 i、j和k 组成**，而且它们有如下的关系： **i² = j² = k² = -1**， iº = jº = kº = 1 , 每个四元数都是 **1、i、j 和 k** 的线性组合，即是四元数一般可表示为**a + bi+ cj + dk**，其中**a、b、c 、d是实数**。
+四元数，是简单的超复数。 [复数](https://baike.baidu.com/item/复数/254365?fromModule=lemma_inlink)是由[实数](https://baike.baidu.com/item/实数/296419?fromModule=lemma_inlink)加上[虚数单位](https://baike.baidu.com/item/虚数单位/6803458?fromModule=lemma_inlink) i 组成**，其中i²= -1**。 相似地，**四元数都是由实数加上三个虚数单位 i、j和k 组成**，而且它们有如下的关系： **i² = j² = k² = -1**， iº = jº = kº = 1 , 每个四元数都是 **1、i、j 和 k** 的线性组合，即是四元数一般可表示为**a + bi+ cj + dk**，其中**a、b、c 、d是实数**。通过绕空间中的任意一个轴，旋转一定的角度，类似轴+角的组合，即可得到姿态角的朝向
 
 对于i、j和k本身的[几何](https://baike.baidu.com/item/几何/303227?fromModule=lemma_inlink)意义可以理解为一种旋转，其中i旋转代表Z轴与Y轴相交平面中Z轴正向向Y轴正向的旋转，j旋转代表X轴与Z轴相交平面中X轴正向向Z轴正向的旋转，k旋转代表Y轴与X轴相交平面中Y轴正向向X轴正向的旋转，-i、-j、-k分别代表i、j、k旋转的反向旋转。
+
+
+
+四元素感觉上就是轴角的进化，也是使用一个3维向量表示转轴和一个角度分量表示绕此转轴的旋转角度，即(x,y,z,w)
+
+```c
+w = cos(theta/2) 
+x  = ax * sin(theta/2) 
+y  = ay * sin(theta/2) 
+z  = az * sin(theta/2)
+```
+
+
+
+**四元数相关计算：**
+
+1.四元数乘法：
 
 参考文献：
 
