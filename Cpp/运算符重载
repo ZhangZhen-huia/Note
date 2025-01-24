@@ -1,0 +1,154 @@
+[TOC]
+
+格式：
+
+`返回值类型 operator 运算符名称 (形参表列)`
+
+`{`
+
+`}`
+
+# 在类中重载运算符
+
+```c++
+#include <iostream>
+#include<string>
+using namespace std;
+
+class complex
+{
+    private:
+    double m_real;//实部
+    double m_imag;//虚部
+
+    public:
+    complex(double real,double imag);
+    complex();
+    complex operator+(const complex &A)const;
+    void display()const;
+};
+
+//定义构造函数
+complex::complex(double real,double imag):m_real(real),m_imag(imag){}
+complex::complex():m_real(0.0),m_imag(0.0){}
+
+//重载复数加法,成员函数末尾加const表示在该函数内不能修改非静态成员的值
+complex complex::operator+(const complex &A)const
+{
+    return complex(this->m_real + A.m_real,this->m_imag + A.m_imag);
+}
+
+
+//显示函数，成员函数末尾加const表示在该函数内不能修改非静态成员的值
+void complex::display()const
+{
+    cout << m_real << "+" << m_imag << "i" <<endl;
+}
+
+int main()
+{
+    complex A(3.3,4.5);
+    complex B(5.1,5.6);
+    complex C;
+    C = A+B;
+    C.display();
+    return 0;
+}
+结果：8.4+10.1i
+```
+
+过程分析：
+首先我们在complex类中重载了加法，那么只有加号左右两边都是complex类的对象才会调用重载函数
+
+当执行`C = A+B;`语句时，编译器检测到`+`号左边（`+`号具有左结合性，所以先检测左边）是一个 complex 对象，就会调用成员函数`operator+()`，也就是转换为下面的形式：
+
+`C=A.operator+(B);`
+
+A是调用重载的对象，B为函数实参
+
+# 在全局重载运算符
+
+```c++
+#include <iostream>
+#include<string>
+using namespace std;
+
+class complex
+{
+    private:
+    double m_real;//实部
+    double m_imag;//虚部
+
+    public:
+    complex(double real,double imag);
+    complex();
+    //声明为友元函数
+    friend complex operator+(const complex &A,const complex B);
+    void display()const;
+};
+
+//定义构造函数
+complex::complex(double real,double imag):m_real(real),m_imag(imag){}
+complex::complex():m_real(0.0),m_imag(0.0){}
+
+//重载复数加法（非成员函数末尾不能加const）
+complex operator+(const complex &A,const complex B)
+{
+    return complex(B.m_real + A.m_real,B.m_imag + A.m_imag);
+}
+
+
+//显示函数，成员函数末尾加const表示在该函数内不能修改非静态成员的值
+void complex::display()const
+{
+    cout << m_real << "+" << m_imag << "i" <<endl;
+}
+
+int main()
+{
+    complex A(3.3,4.5);
+    complex B(5.1,5.6);
+    complex C;
+    C = A+B;
+    C.display();
+    return 0;
+}
+结果：8.4+10.1i
+```
+
+当执行`C = A + B;`语句时，编译器检测到`+`号两边都是 complex 对象，就会转换为类似下面的函数调用：
+
+C= operator+(A, B);
+
+# 重载规则
+
+1、可重载对象
+
+```c++
++  -  *  /  %  ^  &  |  ~  !  =  <  >  +=  -=  *=  /=  %=  ^=  &=  |=  <<  >>  <<=  >>=  ==  !=  <=  >=  &&  ||  ++  --  ,  ->*  ->  ()  []  new  new[]  delete  delete[]
+   
+    只有以上的可以重载
+长度运算符sizeof、条件运算符: ?、成员选择符.和域解析运算符::不能被重载。
+```
+
+2、重载不改变运算优先级和结合性
+
+3、不会改变运算符的用法
+
+4、 运算符重载函数不能有默认的参数，否则就改变了运算符操作数的个数，这显然是错误的
+
+5、 运算符重载函数既可以作为类的成员函数，也可以作为全局函数（**将运算符重载函数作为类的成员函数时，二元运算符的参数只有一个，一元运算符不需要参数。之所以少一个参数，是因为这个参数是隐含的，通过this指针访问其中一个对象**，就好比上面的operate +  complex类的运算符）
+
+6、如果有两个参数，这两个参数可以都是对象，也可以一个是对象，一个是C ++内置类型的数据，如
+
+```c++
+//重载复数加整数
+complex operator+(int A,const complex B)
+{
+    return complex(B.m_real + A,B.m_imag );
+}
+```
+
+***7、箭头运算符`->`、下标运算符`[ ]`、函数调用运算符`( )`、赋值运算符`=`只能以成员函数的形式重载***
+
+8、<<和>>是在 iostream 中被重载，才成为所谓的“流插入运算符”和“流提取运算符”的
