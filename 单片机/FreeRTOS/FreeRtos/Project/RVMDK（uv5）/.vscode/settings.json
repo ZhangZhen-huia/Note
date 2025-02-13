@@ -73,6 +73,7 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "freertos.h": "c",
-    "queue.h": "c"
+    "queue.h": "c",
+    "semphr.h": "c"
   }
 }

@@ -2,6 +2,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
+#include "event_groups.h"
+
 /* 开发板硬件bsp头文件 */
 #include "bsp_led.h"
 #include "bsp_usart.h"
@@ -12,17 +15,17 @@
 void AppTaskCreatTask(void*arg);
 TaskHandle_t StartTaskHandle;
 
-void SendTask(void*arg);
-TaskHandle_t SendTaskHandle;
+void KeyTask(void*arg);
+TaskHandle_t KeyTaskHandle;
 
-void RecTask(void*arg);
-TaskHandle_t RecTaskHandle;
+void LedTask(void*arg);
+TaskHandle_t LedTaskHandle;
 
 StaticTask_t Idle_Task_TCB;
 StackType_t Idle_Task_Stack[configMINIMAL_STACK_SIZE];
 
 /*消息队列*/
-QueueHandle_t TestQueueHandle;
+EventGroupHandle_t Event_Handle;
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
 
@@ -32,7 +35,8 @@ static void BSP_Init(void);/* 用于初始化板载相关资源 */
 void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, 
 																	 StackType_t **ppxIdleTaskStackBuffer, 
 																	 uint32_t *pulIdleTaskStackSize);
-
+#define Key1Event			(0x01<<0)
+#define Key2Event			(0x01<<1)
 
 
 int main(void)
@@ -53,14 +57,14 @@ void AppTaskCreatTask(void*arg)
 
 	taskENTER_CRITICAL();
 
-	if(xTaskCreate(RecTask,"RecTask",50,NULL,1,&RecTaskHandle) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
-	printf("RecTask Create successfully!	");
+	if(xTaskCreate(LedTask,"LedTask",50,NULL,1,&LedTaskHandle) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
+	printf("LedTask Create successfully!	");
 
-	if(xTaskCreate(SendTask,"SendTask",128,NULL,2,&SendTaskHandle) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
-	printf("SendTask Create successfully!	");
+	if(xTaskCreate(KeyTask,"KeyTask",128,NULL,2,&KeyTaskHandle) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
+	printf("KeyTask Create successfully!	");
 
-	if((TestQueueHandle = xQueueCreate(4,4)) != NULL)
-	printf("Queue Create successfully!\n\n");
+	if((Event_Handle = xEventGroupCreate()) != NULL)
+	printf("Event_Handle Create successfully!\r\n\n");
 
 	vTaskDelete(NULL);
 	taskEXIT_CRITICAL();
@@ -71,42 +75,40 @@ void AppTaskCreatTask(void*arg)
 	
 }
 
-void RecTask(void *arg)
+void LedTask(void *arg)
 {
-	BaseType_t xReturn = pdTRUE;/* 定义一个创建信息返回值，默认为 pdTRUE */ 
-	char RecDATA[5]; /* 定义一个接收消息的变量 */ 
+	uint8_t led_flag=0;
 	while (1)
 	 { 
-		xReturn = xQueueReceive( TestQueueHandle,RecDATA,portMAX_DELAY);  
-		if (pdTRUE == xReturn) 
-			printf("RecDATA:%s\n\n",RecDATA); 
-		 else 
-		 printf("ERR: 0x%lx\n\n",xReturn); 
+		if((xEventGroupWaitBits(Event_Handle,Key1Event|Key2Event,pdTRUE,pdTRUE,portMAX_DELAY)	& (Key1Event | Key2Event)) == (Key1Event | Key2Event) )
+		{
+			printf("Key1和Key2都被按下!\r\n");
+			LED1_TOGGLE;
+			led_flag = (led_flag == 0?1:0);
+			if(led_flag)
+				printf("LED ON\r\n");
+			else
+				printf("LED OFF\r\n");
+		}
+		else
+		{
+			printf("ERR!\r\n");
+		}
+		vTaskDelay(20);
  } 	
 }
 
-void SendTask(void *arg)
+void KeyTask(void *arg)
 {
-	char SendData1[5] = "Good"; 
-	char SendData2[4] = "BYE";
+
 	while (1)
 	{
 		if(Key_Scan(KEY1_GPIO_PORT,KEY1_GPIO_PIN) == KEY_ON)
-		{
-			printf("Send Message1!	");
-			if(xQueueSend(TestQueueHandle,SendData1,portMAX_DELAY) != errQUEUE_FULL)
-				printf("Successfully!\n");
-			else
-				printf("Failed!\n");
-		}
+			xEventGroupSetBits(Event_Handle,Key1Event),printf("Key1Press!\r\n");
+		
 		if(Key_Scan(KEY2_GPIO_PORT,KEY2_GPIO_PIN) == KEY_ON)
-		{
-			printf("Send Message2!	");
-			if(xQueueSend(TestQueueHandle,SendData2,portMAX_DELAY) != errQUEUE_FULL)
-				printf("Successfully!\n\n");
-			else
-				printf("Failed!\n\n");
-		}
+			xEventGroupSetBits(Event_Handle,Key2Event),printf("Key2Press!\r\n");
+		
 		vTaskDelay(20);
 	}
 	

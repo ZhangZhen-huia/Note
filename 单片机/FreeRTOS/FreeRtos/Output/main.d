@@ -41,5 +41,8 @@
 ..\..\output\main.o: ..\..\FreeRTOS\include\task.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\list.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\queue.h
+..\..\output\main.o: ..\..\FreeRTOS\include\semphr.h
+..\..\output\main.o: ..\..\FreeRTOS\include\event_groups.h
+..\..\output\main.o: ..\..\FreeRTOS\include\timers.h
 ..\..\output\main.o: ..\..\User\led\bsp_led.h
 ..\..\output\main.o: ..\..\User\key\bsp_key.h

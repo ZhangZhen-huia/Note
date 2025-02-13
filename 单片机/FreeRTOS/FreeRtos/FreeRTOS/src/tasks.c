@@ -2970,7 +2970,7 @@ BaseType_t xReturn;
 
 	/* Store the new item value in the event list. */
 	listSET_LIST_ITEM_VALUE( pxEventListItem, xItemValue | taskEVENT_LIST_ITEM_VALUE_IN_USE );
-
+	//0x02000000 | 0x80000000 = 0x82000000
 	/* Remove the event list form the event flag.  Interrupts do not access
 	event flags. */
 	pxUnblockedTCB = ( TCB_t * ) listGET_LIST_ITEM_OWNER( pxEventListItem );
