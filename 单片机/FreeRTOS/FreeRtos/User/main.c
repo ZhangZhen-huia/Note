@@ -4,28 +4,34 @@
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+#include "timers.h"
 
 /* 开发板硬件bsp头文件 */
 #include "bsp_led.h"
 #include "bsp_usart.h"
 #include "bsp_key.h"
-
+#include "limits.h"
 
 /*任务*/
-void AppTaskCreatTask(void*arg);
-TaskHandle_t StartTaskHandle;
-
-void KeyTask(void*arg);
-TaskHandle_t KeyTaskHandle;
-
-void LedTask(void*arg);
-TaskHandle_t LedTaskHandle;
 
 StaticTask_t Idle_Task_TCB;
 StackType_t Idle_Task_Stack[configMINIMAL_STACK_SIZE];
 
-/*消息队列*/
-EventGroupHandle_t Event_Handle;
+StaticTask_t Timer_Task_TCB;
+StackType_t Timer_Task_Stack[configTIMER_TASK_STACK_DEPTH ];
+
+void AppTaskCreatTask(void*arg);
+TaskHandle_t StartTaskHandle;
+
+void GiveTask(void*arg);
+TaskHandle_t GiveTaskHandle;
+
+void TakeTask(void*arg);
+TaskHandle_t TakeTaskHandle;
+
+
+#define KEY1_EVENT (0x01 << 0) 
+#define KEY2_EVENT (0x01 << 1)
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
 
@@ -35,8 +41,7 @@ static void BSP_Init(void);/* 用于初始化板载相关资源 */
 void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, 
 																	 StackType_t **ppxIdleTaskStackBuffer, 
 																	 uint32_t *pulIdleTaskStackSize);
-#define Key1Event			(0x01<<0)
-#define Key2Event			(0x01<<1)
+
 
 
 int main(void)
@@ -56,15 +61,12 @@ void AppTaskCreatTask(void*arg)
 {
 
 	taskENTER_CRITICAL();
+	if((xTaskCreate(GiveTask,"GiveTask",128,NULL,2,&GiveTaskHandle)) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
+		printf("GiveTask Create Successfully	");
 
-	if(xTaskCreate(LedTask,"LedTask",50,NULL,1,&LedTaskHandle) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
-	printf("LedTask Create successfully!	");
+	if((xTaskCreate(TakeTask,"TakeTask",128,NULL,1,&TakeTaskHandle)) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
+		printf("TakeTask Create Successfully	\r\n\n");
 
-	if(xTaskCreate(KeyTask,"KeyTask",128,NULL,2,&KeyTaskHandle) != errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
-	printf("KeyTask Create successfully!	");
-
-	if((Event_Handle = xEventGroupCreate()) != NULL)
-	printf("Event_Handle Create successfully!\r\n\n");
 
 	vTaskDelete(NULL);
 	taskEXIT_CRITICAL();
@@ -75,42 +77,48 @@ void AppTaskCreatTask(void*arg)
 	
 }
 
-void LedTask(void *arg)
+void TakeTask(void *arg)
 {
-	uint8_t led_flag=0;
+	uint32_t r_event = 0;
+	uint32_t last_event = 0;
+	uint32_t xReturn;
 	while (1)
-	 { 
-		if((xEventGroupWaitBits(Event_Handle,Key1Event|Key2Event,pdTRUE,pdTRUE,portMAX_DELAY)	& (Key1Event | Key2Event)) == (Key1Event | Key2Event) )
-		{
-			printf("Key1和Key2都被按下!\r\n");
-			LED1_TOGGLE;
-			led_flag = (led_flag == 0?1:0);
-			if(led_flag)
-				printf("LED ON\r\n");
+	{
+
+			xReturn = xTaskNotifyWait(0,0xFFFFFFFF,&r_event,portMAX_DELAY);	
+			if( xReturn == pdTRUE )
+				last_event |= r_event; 
+			if(last_event == (KEY1_EVENT|KEY2_EVENT))
+			{
+				last_event = 0;
+				printf ( "Key1 与 Key2 都按下\n"); 
+				LED1_TOGGLE;
+			}
 			else
-				printf("LED OFF\r\n");
-		}
-		else
-		{
-			printf("ERR!\r\n");
-		}
-		vTaskDelay(20);
- } 	
+			{
+				last_event = r_event;
+			}
+		
+			vTaskDelay(20);
+	}
+	
 }
 
-void KeyTask(void *arg)
+
+void GiveTask(void *arg)
 {
 
 	while (1)
 	{
 		if(Key_Scan(KEY1_GPIO_PORT,KEY1_GPIO_PIN) == KEY_ON)
-			xEventGroupSetBits(Event_Handle,Key1Event),printf("Key1Press!\r\n");
+			printf ( "KEY1 被按下\n" ),xTaskGenericNotify(TakeTaskHandle,(uint32_t)KEY1_EVENT,eSetBits,NULL);
 		
 		if(Key_Scan(KEY2_GPIO_PORT,KEY2_GPIO_PIN) == KEY_ON)
-			xEventGroupSetBits(Event_Handle,Key2Event),printf("Key2Press!\r\n");
+			printf ( "KEY2 被按下\n" ),xTaskGenericNotify(TakeTaskHandle,(uint32_t)KEY2_EVENT,eSetBits,NULL);
 		
 		vTaskDelay(20);
 	}
+	
 	
 }
 
@@ -142,5 +150,12 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
 	*ppxIdleTaskTCBBuffer=&Idle_Task_TCB;/* 任务控制块内存 */
 	*ppxIdleTaskStackBuffer=Idle_Task_Stack;/* 任务堆栈内存 */
 	*pulIdleTaskStackSize=configMINIMAL_STACK_SIZE;/* 任务堆栈大小 */
+}
+
+void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize )
+{
+	*ppxTimerTaskTCBBuffer = &Timer_Task_TCB;
+	*ppxTimerTaskStackBuffer = Timer_Task_Stack;
+	*pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
 }
 

@@ -74,6 +74,7 @@
   "files.associations": {
     "freertos.h": "c",
     "queue.h": "c",
-    "semphr.h": "c"
+    "semphr.h": "c",
+    "limits.h": "c"
   }
 }
