@@ -47,3 +47,7 @@
 ..\..\output\main.o: ..\..\User\led\bsp_led.h
 ..\..\output\main.o: ..\..\User\key\bsp_key.h
 ..\..\output\main.o: C:\Keil5 MDK\ARM\ARMCC\Bin\..\include\limits.h
+..\..\output\main.o: ..\..\User\spi\bsp_spi.h
+..\..\output\main.o: ..\..\User\FATFS\src\ff.h
+..\..\output\main.o: ..\..\User\FATFS\src\integer.h
+..\..\output\main.o: ..\..\User\FATFS\src\ffconf.h

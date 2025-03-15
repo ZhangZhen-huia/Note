@@ -90,7 +90,7 @@ typedef struct
   uint16_t I2S_Mode;         /*!< Specifies the I2S operating mode.
                                   This parameter can be a value of @ref I2S_Mode */
 
-  uint16_t I2S_Standard;     /*!< Specifies the standard used for the I2S communication.
+  uint16_t I2S_Standard;     /*!< Specifies the s	tandard used for the I2S communication.
                                   This parameter can be a value of @ref I2S_Standard */
 
   uint16_t I2S_DataFormat;   /*!< Specifies the data format for the I2S communication.
