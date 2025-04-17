@@ -147,3 +147,39 @@ STR.W R0, [R1], #-12 ;后索引
 该指令是把 R0 的值存储到地址 R1 处的。在存储完毕后， R1 = R1+(‐12)
 
 ![image-20250310125317192](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202503101253249.png)
+
+## 立即数
+
+立即数的位数是有限制的，且不同指令的限制可以不同，为如果在使用中超过了限制，则汇编器会给你报错
+
+有一种方法可用消除这种限制，那就是用LDR/STR，不使用如#offset 的立即数，而是使用寄存器来提供偏移量
+
+> 如果使用寄存器提供偏移量， 就不能使用“预索引”和“后索引”了——也就是说不能修改基址寄存器的值
+>
+> ![image-20250317172842859](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202503171729377.png)
+
+## 伪指令
+
+### LDR
+
+大多数情况下，汇编器都在遇到 LDR 伪指令时，都会把它转换成一条相对于 PC 的加载 指令，来产生需要的数据。
+
+如果汇编器发现要产生立即数是一个程序地址，它会自动地把 LSB 置位
+
+> ![image-20250317173350120](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202503171733153.png)
+>
+> 汇编器会认出 address1 是一个程序地址，所以自动置位 LSB
+
+如果汇编器发现要加载的是数据地址，则不会置位
+
+> ![image-20250317173429669](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202503171734704.png)
+
+### ADR
+
+决不会修改 LSB
+
+> ![image-20250317173457302](https://raw.githubusercontent.com/ZhangZhen-huia/Note/main/img/202503171734336.png)
+
+> LDR 通常是把要加载的数值预先定义，再使用一条 PC 相对加载指令来 取出。而 ADR 则尝试对 PC 作算术加法或减法来取得立即数。因此 ADR 未必总能求出需要的 立即数。其实顾名思义，ADR 是为了取出附近某条指令或者变量的地址，而 LDR 则是取出 一个通用的 32 位整数。因为 ADR 更专一，所以得到了优化，故而它的代码效率常常比 LDR 的要高
+
+# 剩下的有需要再看书吧
